@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DocuCheck AI — Catch shipping-document errors early</title>
+  <meta name="description" content="DocuCheck AI cross-checks Commercial Invoices, Packing Lists and Bills of Lading, flags discrepancies by severity and drafts correction letters for importers." />
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #475569;
+      --blue: #1d4ed8;
+      --blue-dark: #1e3a8a;
+      --blue-soft: #eff6ff;
+      --line: #e2e8f0;
+      --bg: #f8fafc;
+      --white: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; }
+
+    .wrap {
+      width: min(100% - 40px, 960px);
+      margin: 0 auto;
+    }
+
+    /* Header */
+    header {
+      background: var(--white);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--blue);
+      color: var(--white);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+    }
+
+    .stage-badge {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--blue-dark);
+      background: var(--blue-soft);
+      border: 1px solid #bfdbfe;
+      padding: 6px 12px;
+      border-radius: 999px;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 80px 0 64px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-size: clamp(42px, 8vw, 72px);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      margin: 0 0 20px;
+    }
+
+    .subhead {
+      font-size: clamp(18px, 2.6vw, 23px);
+      color: var(--muted);
+      max-width: 720px;
+      margin: 0 auto 34px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 48px;
+      padding: 0 22px;
+      border: 0;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 15px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: var(--blue);
+      color: var(--white);
+    }
+
+    .btn-primary:hover { background: var(--blue-dark); }
+
+    .btn-secondary {
+      background: var(--white);
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    /* Cards */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      padding-bottom: 64px;
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 28px;
+    }
+
+    .card-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: var(--blue-soft);
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+
+    .card h2 {
+      font-size: 19px;
+      margin: 0 0 10px;
+      letter-spacing: -0.01em;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    /* Demo */
+    .demo {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 32px;
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .demo h2 {
+      margin: 0 0 8px;
+      font-size: 26px;
+      letter-spacing: -0.02em;
+    }
+
+    .demo p.note {
+      margin: 0 0 22px;
+      color: var(--muted);
+    }
+
+    .player-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 22px;
+    }
+
+    .tracks {
+      display: grid;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .track {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 16px;
+      background: var(--bg);
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .track.active {
+      border-color: #93c5fd;
+      background: var(--blue-soft);
+    }
+
+    .track-num {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: var(--white);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .track-title {
+      margin: 0 0 2px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .track-desc {
+      margin: 0 0 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .track audio {
+      width: 100%;
+      height: 34px;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--line);
+      background: var(--white);
+      padding: 28px 0 40px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer-inner {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    @media (max-width: 760px) {
+      .hero { padding: 56px 0 44px; }
+      .cards { grid-template-columns: 1fr; }
+      .stage-badge { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="wrap header-inner">
+    <div class="brand">
+      <span class="brand-mark">D</span>
+      <span>DocuCheck AI</span>
+    </div>
+    <span class="stage-badge">Start-Up Chile Build · Prototype</span>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <span class="eyebrow">International trade document control</span>
+    <h1>Catch shipping-document errors early.</h1>
+    <p class="subhead">
+      DocuCheck AI cross-checks Commercial Invoices, Packing Lists and Bills of Lading,
+      flags discrepancies by severity and drafts correction letters for importers.
+    </p>
+    <div class="actions">
+      <a class="btn btn-primary" href="#demo">Listen to the 5-part demo →</a>
+      <a class="btn btn-secondary" href="mailto:bachika1980@gmail.com">Request a demo</a>
+    </div>
+  </section>
+
+  <section class="wrap cards">
+    <article class="card">
+      <div class="card-icon">📄</div>
+      <h2>The problem</h2>
+      <p>
+        In international trade, the invoice, packing list and bill of lading rarely tell
+        the same story. Mismatched quantities, weights, values or container numbers are
+        discovered too late — at the port, at customs, or during payment.
+      </p>
+    </article>
+
+    <article class="card">
+      <div class="card-icon">⚙️</div>
+      <h2>The solution</h2>
+      <p>
+        DocuCheck AI checks all three documents automatically. It separates confirmed
+        discrepancies from missing information, scores each finding from Critical to Low,
+        and drafts ready-to-review correction or clarification letters.
+      </p>
+    </article>
+
+    <article class="card">
+      <div class="card-icon">🌎</div>
+      <h2>The focus</h2>
+      <p>
+        Built on 16 years of hands-on procurement experience. Starting with food products
+        and raw materials, with Chile and Latin America as the first market. Next on the
+        roadmap: veterinary certificates and other regulatory documents.
+      </p>
+    </article>
+  </section>
+
+  <section class="wrap demo" id="demo">
+    <h2>See it in action</h2>
+    <p class="note">Five short audio chapters. Headphones recommended. Nothing is sent automatically.</p>
+
+    <div class="player-bar">
+      <button class="btn btn-primary" id="playAll" type="button">▶ Play all chapters</button>
+      <button class="btn btn-secondary" id="stopAll" type="button">Stop</button>
+    </div>
+
+    <div class="tracks">
+      <div class="track">
+        <span class="track-num">1</span>
+        <div>
+          <p class="track-title">Three documents, one shipment</p>
+          <p class="track-desc">Upload the Commercial Invoice, Packing List and Bill of Lading.</p>
+          <audio controls preload="metadata" src="audio/1.ogg"></audio>
+        </div>
+      </div>
+
+      <div class="track">
+        <span class="track-num">2</span>
+        <div>
+          <p class="track-title">Finding the discrepancies</p>
+          <p class="track-desc">The report flags confirmed mismatches in packages and gross weight.</p>
+          <audio controls preload="metadata" src="audio/2.ogg"></audio>
+        </div>
+      </div>
+
+      <div class="track">
+        <span class="track-num">3</span>
+        <div>
+          <p class="track-title">Severity and recommendations</p>
+          <p class="track-desc">Each finding gets a risk level and a concrete action for the importer.</p>
+          <audio controls preload="metadata" src="audio/3.ogg"></audio>
+        </div>
+      </div>
+
+      <div class="track">
+        <span class="track-num">4</span>
+        <div>
+          <p class="track-title">Arithmetic and identity checks</p>
+          <p class="track-desc">Commercial Validation and Parties Validation run alongside the detector.</p>
+          <audio controls preload="metadata" src="audio/4.ogg"></audio>
+        </div>
+      </div>
+
+      <div class="track">
+        <span class="track-num">5</span>
+        <div>
+          <p class="track-title">A ready letter for the supplier</p>
+          <p class="track-desc">Suggested Correction Request drafts a letter for review — nothing is sent.</p>
+          <audio controls preload="metadata" src="audio/5.ogg"></audio>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap footer-inner">
+    <span>DocuCheck AI · Built for Start-Up Chile Build</span>
+    <span>
+      <a href="https://github.com/kate-docucheck/docucheck-ai">Source code</a>
+      &nbsp;·&nbsp;
+      <a href="mailto:bachika1980@gmail.com">Contact</a>
+    </span>
+  </div>
+</footer>
+
+<!--
+  BEFORE PUBLISHING — replace these 2 placeholders in this file:
+  1. https://github.com/kate-docucheck/docucheck-ai → your GitHub repository URL
+  2. bachika1980@gmail.com      → your contact email
+
+  The five audio chapters live in ./audio/1.ogg ... 5.ogg and are ready to use.
+-->
+
+<script>
+  (function () {
+    const tracks = Array.from(document.querySelectorAll('.track audio'));
+    const cards = Array.from(document.querySelectorAll('.track'));
+    const playAll = document.getElementById('playAll');
+    const stopAll = document.getElementById('stopAll');
+
+    function setActive(index) {
+      cards.forEach((card, i) => card.classList.toggle('active', i === index));
+    }
+
+    function playFrom(index) {
+      if (index >= tracks.length) {
+        setActive(-1);
+        return;
+      }
+      tracks.forEach((audio, i) => {
+        if (i !== index) audio.pause();
+      });
+      const audio = tracks[index];
+      audio.currentTime = 0;
+      setActive(index);
+      const p = audio.play();
+      if (p && typeof p.catch === 'function') p.catch(() => {});
+    }
+
+    playAll.addEventListener('click', () => playFrom(0));
+    stopAll.addEventListener('click', () => {
+      tracks.forEach((audio) => audio.pause());
+      setActive(-1);
+    });
+
+    tracks.forEach((audio, i) => {
+      audio.addEventListener('play', () => setActive(i));
+      audio.addEventListener('ended', () => playFrom(i + 1));
+    });
+  })();
+</script>
+
+</body>
+</html>
